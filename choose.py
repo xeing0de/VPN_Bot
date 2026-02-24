@@ -1,7 +1,8 @@
 from aiogram.types import Message
 
-from usermassage import on_any_message, only_whitelist
+from usermessage import on_any_message, only_whitelist
 from userdenied import denied
+from news import forward_news
 
 async def chat_choose(message: Message, DATA, INFO, WHITELIST):
     if message.chat.type == "private":
@@ -13,7 +14,10 @@ async def chat_choose(message: Message, DATA, INFO, WHITELIST):
     thread_id = message.message_thread_id
     thread_key = f"{chat_id}_{thread_id}"
 
-    name = None
-
-    text = responses.get(name, "Чат разрешен, но сценарий ответа не настроен.")
-    await message.answer(text)
+    name = INFO["allowed_chats"][thread_key]["name"]
+    
+    if name == "Новости":
+        return await forward_news(message, WHITELIST)
+    else:
+        text = "Чат разрешен, но сценарий ответа не настроен."
+        await message.answer(text)
