@@ -4,14 +4,15 @@ import asyncio
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
 
-from data import get_data, get_info
+from data import get_data
 from choose import chat_choose
+from usermessage import on_payment_confirm, PAYMENT_CALLBACK_PREFIX
 
 TOKEN = os.getenv("TOKEN")
 DATA_PATH = "data.json"
 INFO_PATH = "info.json"
 DATA = get_data(DATA_PATH)
-INFO = get_info(INFO_PATH)
+INFO = get_data(INFO_PATH)
 WHITELIST = {
     int(user_id) for user_id, payload in DATA["users"].items()
     if payload["time"] > 0
@@ -36,6 +37,10 @@ async def main() -> None:
     dp["INFO"] = INFO
 
     dp.message.register(chat_choose, F.text, only_allowed_chats)
+    dp.callback_query.register(
+        on_payment_confirm,
+        F.data.startswith(PAYMENT_CALLBACK_PREFIX),
+    )
 
     await dp.start_polling(bot)
 

@@ -7,7 +7,7 @@ from news import forward_news
 async def chat_choose(message: Message, DATA, INFO, WHITELIST):
     if message.chat.type == "private":
         if await only_whitelist(message, WHITELIST):
-            return await on_any_message(message, DATA)
+            return await on_any_message(message, DATA, INFO)
         return await denied(message)
 
     chat_id = message.chat.id
